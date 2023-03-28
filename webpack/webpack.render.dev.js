@@ -2,6 +2,7 @@ const path = require('path');
 const webpackMerge = require('webpack-merge');
 const baseConfig = require('./webpack.base.js');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const WindiCSSWebpackPlugin = require('windicss-webpack-plugin');
 
 const devConfig = {
   mode: 'development',
@@ -28,6 +29,9 @@ const devConfig = {
       template: path.resolve(__dirname, '../app/renderer/index.html'),
       filename: path.resolve(__dirname, '../dist/index.html'),
       chunks: ['index'],
+    }),
+    new WindiCSSWebpackPlugin({
+      virtualModulePath: 'app/renderer',
     }),
   ],
   module: {
