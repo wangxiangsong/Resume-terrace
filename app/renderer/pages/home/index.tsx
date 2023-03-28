@@ -1,9 +1,9 @@
-import React from 'react';
-import Logo from '../../assest/logo.png';
+import React, { useEffect } from 'react';
+import Logo from '@src/assest/logo.png';
 import { useNavigate } from 'react-router-dom';
 import { shell } from 'electron';
-import { ROUTER_ENTRY } from '../../common/router';
-import { isExternalLink } from '../../utils/commonFunc';
+import { ROUTER_ENTRY } from '@src/common/router';
+import { isExternalLink } from '@src/utils/commonFunc';
 
 const Home = () => {
   const navigate = useNavigate();
