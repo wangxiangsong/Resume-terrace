@@ -24,11 +24,11 @@ const mainConfig = {
   devtool: 'inlin-source-map',
   // mode 等价于我们在 DefinePlugin 中定义了 process.env.NODE_ENV
   mode: 'development',
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': 'development',
-    }),
-  ],
+  // plugins: [
+  //   new webpack.DefinePlugin({
+  //     'process.env.NODE_ENV': 'development',
+  //   }),
+  // ],
 };
 
 module.exports = webpackMerge.merge(baseConfig, mainConfig);
