@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Logo from '@src/assest/logo.png';
+import Logo from '@src/assest/home/logo.png';
 import { useNavigate } from 'react-router-dom';
 import { shell } from 'electron';
 import { ROUTER_ENTRY } from '@src/common/router';

@@ -1,19 +1,4 @@
-interface RouterItemProps {
-  /**
-   * @description 当前路由的名称
-   */
-  url: string;
-
-  /**
-   * @desciption 关键key值
-   */
-  key: string;
-
-  /**
-   * @desciption 展示的文本
-   */
-  title: string;
-}
+import { RouterItemProps } from './type';
 
 const ROUTER = {
   home: '/',

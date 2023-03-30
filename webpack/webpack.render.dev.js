@@ -41,6 +41,10 @@ const devConfig = {
         use: ['style-loader', 'css-loader', 'postcss-loader'],
       },
       {
+        test: /\.svg$/,
+        use: ['svg-inline-loader'],
+      },
+      {
         test: /\.less$/,
         exclude: /node_modules/,
         use: [
