@@ -1,10 +1,18 @@
 import React from 'react';
 import { Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { ROUTER } from '@src/common/router';
 
 function ResumeAction() {
+  const navigate = useNavigate();
+
+  const goBack = () => navigate(ROUTER.home);
+
   return (
     <div className="h-full flex items-center justify-between px-16px">
-      <Button type="text">返回</Button>
+      <Button type="text" onClick={goBack}>
+        返回
+      </Button>
       <Button type="primary">导出PDF</Button>
     </div>
   );
