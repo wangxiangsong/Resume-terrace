@@ -1,4 +1,7 @@
-export interface RouterItemProps {
+/**
+ * 路由信息
+ */
+export interface ROTER_ITEM_PROPS {
   /**
    * @description 当前路由的名称
    */
@@ -15,6 +18,9 @@ export interface RouterItemProps {
   title: string;
 }
 
+/**
+ * @description 右侧模块信息列表
+ */
 export enum RESUME_TOOLBAR_MAPS {
   /**
    * @description 个人信息
@@ -72,10 +78,32 @@ export enum RESUME_TOOLBAR_MAPS {
   test = 'test',
 }
 
-export interface resumeToolbarItem {
+/**
+ * @description toolbar 列表信息
+ */
+export interface RESUME_TOOLBAR_ITEM {
   key: RESUME_TOOLBAR_MAPS;
 
   name: string;
 
   summary: string;
+
+  require: boolean;
+}
+
+/**
+ * @description 每个item对应的icon名称
+ */
+export interface ICON_LIST_TYPE {
+  key: RESUME_TOOLBAR_MAPS;
+
+  type: string;
+}
+
+/**
+ * @description 已添加模块 & 未添加模块枚举值
+ */
+export enum TOOLBAR_MODULE_TYPE {
+  ADDED = '已添加模块',
+  NOADDED = '未添加模块',
 }

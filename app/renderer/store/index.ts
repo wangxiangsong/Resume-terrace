@@ -1,14 +1,22 @@
-import logger from 'redux-logger';
-import RcReduxModel from 'rc-redux-model';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
+import HomeReducer from './module/home';
+import ResumeReducer from './module/resume';
+import TempleteReducer from './module/templete';
 
-// 👇 引入我们写好的 model
-import globalModel from './globalModel';
+const store = configureStore({
+  reducer: {
+    home: HomeReducer,
+    resume: ResumeReducer,
+    templete: TempleteReducer,
+  },
+});
 
-// 👇 这里只需要调用 RcReduxModel 实例化一下得到最后的 reduxModel
-const reduxModel = new RcReduxModel([globalModel]);
+/**
+ * getState, dispatch 是返回store状态的函数
+ * typeof 用来获取一个变量或对象的类型
+ * ReturnType 是用于提取函数的返回值类型
+ */
+export type Store = ReturnType<typeof store.getState>;
+export type DispatchType = typeof store.dispatch;
 
-// 👇 无侵入式的使用 Redux，即使你写最原始的 reducer 也照样支持
-const reducerList = combineReducers(reduxModel.reducers);
-
-export default createStore(reducerList, applyMiddleware(reduxModel.thunk, logger));
+export default store;

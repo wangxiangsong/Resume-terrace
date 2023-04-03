@@ -1,4 +1,4 @@
-import { RouterItemProps } from './type';
+import { ROTER_ITEM_PROPS } from './type';
 
 const ROUTER = {
   home: '/',
@@ -10,7 +10,7 @@ const ROUTER_KEY = {
   resume: 'resume',
 };
 
-const ROUTER_ENTRY: RouterItemProps[] = [
+const ROUTER_ENTRY: ROTER_ITEM_PROPS[] = [
   {
     url: 'https://juejin.cn/user/1011967230745918/posts',
     key: 'info',

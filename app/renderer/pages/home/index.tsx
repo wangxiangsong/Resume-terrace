@@ -3,7 +3,7 @@ import Logo from '@src/assest/home/logo.png';
 import { useNavigate } from 'react-router-dom';
 import { shell } from 'electron';
 import { ROUTER_ENTRY } from '@src/common/router';
-import { isExternalLink } from '@src/utils/commonFunc';
+import { isExternalLink } from '@src/utils/judgeExternalLink';
 
 const Home = () => {
   const navigate = useNavigate();

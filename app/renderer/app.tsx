@@ -6,6 +6,7 @@ import { ConfigProvider } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 import 'antd/dist/antd.css';
 import store from './store';
+import '@src/styles/antdChange.less';
 
 import { Provider } from 'react-redux';
 

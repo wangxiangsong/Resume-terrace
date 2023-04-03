@@ -1,6 +1,15 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { Store } from '@src/store';
+import { TempleteOne } from '@src/templete';
 
 function ResumeContent() {
-  return <div>我是简历内容展示区</div>;
+  const list = useSelector((state: Store) => state.resume.alreadyModuleList);
+
+  return (
+    <div className="h-full">
+      <TempleteOne />
+    </div>
+  );
 }
 export default ResumeContent;
