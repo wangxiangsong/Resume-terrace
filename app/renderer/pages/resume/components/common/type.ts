@@ -6,4 +6,5 @@ export interface BASE_INFO_FIELDS {
   label: string;
   type: string;
   require: boolean;
+  span: number;
 }

@@ -7,12 +7,9 @@ import { useDispatch } from 'react-redux';
 import { DispatchType } from '@src/store';
 import { addedListToRedux } from '@src/store/module/resume';
 import InfoModal from './components/infoModal';
+import { BASE_INFO_FIELDS } from './components/common/type';
+import { baseInfoFields, concatInfoFields } from './components/common/const';
 
-interface INITDATA_TYPE {
-  addedList: RESUME_TOOLBAR_ITEM[];
-  noAddedList: RESUME_TOOLBAR_ITEM[];
-  open: boolean | undefined;
-}
 /**
  * @description 已添加模块 & 未添加模块 的列表
  */
@@ -21,10 +18,20 @@ interface TOOLBAR_LIST_TYPE {
   list: RESUME_TOOLBAR_ITEM[] | undefined;
 }
 
+interface INITDATA_TYPE {
+  addedList: RESUME_TOOLBAR_ITEM[];
+  noAddedList: RESUME_TOOLBAR_ITEM[];
+  open: boolean | undefined;
+  currentModalItem: Partial<RESUME_TOOLBAR_ITEM>;
+  fieldsData: BASE_INFO_FIELDS[];
+}
+
 const initData: INITDATA_TYPE = {
   addedList: [],
   noAddedList: [],
   open: false,
+  currentModalItem: {},
+  fieldsData: [],
 };
 
 function ResumeToolbar() {
@@ -35,7 +42,7 @@ function ResumeToolbar() {
     initData
   );
 
-  const { addedList, noAddedList, open } = state;
+  const { addedList, noAddedList, open, currentModalItem, fieldsData } = state;
 
   const toolbarList: TOOLBAR_LIST_TYPE[] = [
     {
@@ -107,7 +114,11 @@ function ResumeToolbar() {
   /**
    * @description 删除点击事件
    */
-  const removeModuleFromAddModule = (itemObj: RESUME_TOOLBAR_ITEM) => {
+  const removeModuleFromAddModule = (
+    e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
+    itemObj: RESUME_TOOLBAR_ITEM
+  ) => {
+    e.stopPropagation();
     let newAddedList = _.cloneDeep(addedList);
     let newNoAddedlist = _.cloneDeep(noAddedList);
     let currentIndex = getListIndex(addedList, itemObj);
@@ -124,7 +135,17 @@ function ResumeToolbar() {
    */
   const openInfoModal = (itemObj: RESUME_TOOLBAR_ITEM) => {
     console.log('%c ❤️嘿嘿92❤️:', 'color: Aquamarine; background: Yellow; font-size: 20px;', itemObj);
-    setState({ open: true });
+    let res: BASE_INFO_FIELDS[] = [];
+    switch (itemObj.key) {
+      case RESUME_TOOLBAR_MAPS.personal:
+        res = baseInfoFields;
+        break;
+      case RESUME_TOOLBAR_MAPS.contact:
+        res = concatInfoFields;
+        break;
+    }
+
+    setState({ open: true, currentModalItem: itemObj, fieldsData: res });
   };
 
   /**
@@ -169,7 +190,9 @@ function ResumeToolbar() {
                         <MyIcon
                           type="icon-resume-shanchu"
                           className="cursor-pointer"
-                          onClick={() => removeModuleFromAddModule(d)}
+                          onClick={(e: React.MouseEvent<HTMLSpanElement, MouseEvent>) =>
+                            removeModuleFromAddModule(e, d)
+                          }
                         />
                       </div>
                     ) : null}
@@ -182,7 +205,13 @@ function ResumeToolbar() {
         </div>
       ))}
 
-      <InfoModal open={open} onCancel={closeInfoModal} onOkAndEnter={onOkAndEnter} />
+      <InfoModal
+        open={open}
+        onCancel={closeInfoModal}
+        onOkAndEnter={onOkAndEnter}
+        currentModalItem={currentModalItem as RESUME_TOOLBAR_ITEM}
+        fieldsData={fieldsData as BASE_INFO_FIELDS[]}
+      />
     </div>
   );
 }
