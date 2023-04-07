@@ -27,7 +27,9 @@ export const Home = createSlice({
    * 同步修改 state 的状态值
    */
   reducers: {
-    modifyName: (state, action: { payload: string; type: string }) => {},
+    modifyName: (state, action: { payload: string; type: string }) => {
+      state.appName = action.payload;
+    },
   },
   /**
    * @extraReducers 异步reducers，固定写法
