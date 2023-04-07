@@ -20,62 +20,37 @@ export interface ROTER_ITEM_PROPS {
 
 /**
  * @description 右侧模块信息列表
+ * @personal 个人信息
+ * @contact 联系方式
+ * @education 教育信息
+ * @workPrefer 工作期望
+ * @schoolExperience 在校经历
+ * @projectExperience 项目经验
+ * @workExperience 工作经历
+ * @certificate 获奖证书
+ * @evaluation 个人评价
+ * @skill 技能清单
  */
 export enum RESUME_TOOLBAR_MAPS {
-  /**
-   * @description 个人信息
-   */
   personal = 'personal',
 
-  /**
-   * @description 联系方式
-   */
   contact = 'contact',
 
-  /**
-   * @description 教育信息
-   */
   education = 'education',
 
-  /**
-   * @description 工作期望
-   */
   workPrefer = 'workPrefer',
 
-  /**
-   * @description 在校经历
-   */
   schoolExperience = 'schoolExperience',
 
-  /**
-   * @description 项目经验
-   */
   projectExperience = 'projectExperience',
 
-  /**
-   * @description 工作经历
-   */
   workExperience = 'workExperience',
 
-  /**
-   * @description 获奖证书
-   */
   certificate = 'certificate',
 
-  /**
-   * @description 个人评价
-   */
   evaluation = 'evaluation',
 
-  /**
-   * @description 技能清单
-   */
   skill = 'skill',
-
-  /**
-   * @description 测试用例
-   */
-  test = 'test',
 }
 
 /**
