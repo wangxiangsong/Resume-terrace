@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
-import { RESUME_TOOLBAR_LIST, ICON_LIST } from '@src/common/resumeToolbar';
+import { RESUME_TOOLBAR_LIST, ICON_LIST, toolbarModuleHomologousModalFormFields } from '@src/common/resumeToolbar';
 import { RESUME_TOOLBAR_ITEM, RESUME_TOOLBAR_MAPS, ICON_LIST_TYPE, TOOLBAR_MODULE_TYPE } from '@src/common/type';
 import { MyIcon } from '@src/assest/resume';
 import _ from 'lodash';
@@ -8,7 +8,7 @@ import { DispatchType } from '@src/store';
 import { addedListToRedux } from '@src/store/module/resume';
 import InfoModal from './components/infoModal';
 import { BASE_INFO_FIELDS } from './components/common/type';
-import { baseInfoFields, concatInfoFields } from './components/common/const';
+import { moduleHomologousModalFormFields } from './components/common/const';
 
 /**
  * @description 已添加模块 & 未添加模块 的列表
@@ -134,17 +134,7 @@ function ResumeToolbar() {
    * @description 打开弹窗，判断是哪种信息录入
    */
   const openInfoModal = (itemObj: RESUME_TOOLBAR_ITEM) => {
-    console.log('%c ❤️嘿嘿92❤️:', 'color: Aquamarine; background: Yellow; font-size: 20px;', itemObj);
-    let res: BASE_INFO_FIELDS[] = [];
-    switch (itemObj.key) {
-      case RESUME_TOOLBAR_MAPS.personal:
-        res = baseInfoFields;
-        break;
-      case RESUME_TOOLBAR_MAPS.contact:
-        res = concatInfoFields;
-        break;
-    }
-
+    let res: BASE_INFO_FIELDS[] = moduleHomologousModalFormFields[itemObj.key];
     setState({ open: true, currentModalItem: itemObj, fieldsData: res });
   };
 
@@ -204,14 +194,15 @@ function ResumeToolbar() {
           </div>
         </div>
       ))}
-
-      <InfoModal
-        open={open}
-        onCancel={closeInfoModal}
-        onOkAndEnter={onOkAndEnter}
-        currentModalItem={currentModalItem as RESUME_TOOLBAR_ITEM}
-        fieldsData={fieldsData as BASE_INFO_FIELDS[]}
-      />
+      {open ? (
+        <InfoModal
+          open={open}
+          onCancel={closeInfoModal}
+          onOkAndEnter={onOkAndEnter}
+          currentModalItem={currentModalItem as RESUME_TOOLBAR_ITEM}
+          fieldsData={fieldsData as BASE_INFO_FIELDS[]}
+        />
+      ) : null}
     </div>
   );
 }

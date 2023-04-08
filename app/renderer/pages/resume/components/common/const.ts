@@ -1,9 +1,7 @@
-import { BASE_INFO_FIELDS } from './type';
+import { createUID } from '@src/utils/createUID';
+import { BASE_INFO_FIELDS, RECOMMEND_SKILL_TYPE } from './type';
 
-/**
- * @desc 基本信息字段
- */
-const baseInfoFields: BASE_INFO_FIELDS[] = [
+const personalFields: BASE_INFO_FIELDS[] = [
   {
     key: 'username',
     label: '姓名',
@@ -15,22 +13,18 @@ const baseInfoFields: BASE_INFO_FIELDS[] = [
     key: 'nativePlace',
     label: '籍贯',
     type: 'input',
-    require: false,
+    require: true,
     span: 12,
   },
   {
     key: 'hobby',
     label: '爱好',
-    type: 'input',
-    require: true,
-    span: 12,
+    type: 'textArea',
+    span: 24,
   },
 ];
 
-/**
- * @desc 教育信息
- */
-const educationInfo: BASE_INFO_FIELDS[] = [
+const educationFields: BASE_INFO_FIELDS[] = [
   {
     key: 'school',
     label: '学校',
@@ -53,7 +47,7 @@ const educationInfo: BASE_INFO_FIELDS[] = [
     span: 12,
   },
   {
-    key: 'session',
+    key: 'schoolYear',
     label: '学年',
     type: 'dateRange',
     require: true,
@@ -61,10 +55,7 @@ const educationInfo: BASE_INFO_FIELDS[] = [
   },
 ];
 
-/**
- * @desc 联系方式
- */
-const concatInfoFields: BASE_INFO_FIELDS[] = [
+const contactFields: BASE_INFO_FIELDS[] = [
   {
     key: 'phone',
     label: '电话',
@@ -73,7 +64,7 @@ const concatInfoFields: BASE_INFO_FIELDS[] = [
     span: 12,
   },
   {
-    key: 'email',
+    key: 'postbox',
     label: '邮箱',
     type: 'input',
     require: true,
@@ -82,47 +73,287 @@ const concatInfoFields: BASE_INFO_FIELDS[] = [
   {
     key: 'github',
     label: 'github',
-    type: 'input',
-    require: false,
-    span: 12,
+    type: 'longInput',
+    span: 24,
+  },
+  {
+    key: 'juejin',
+    label: 'juejin',
+    type: 'longInput',
+    span: 24,
   },
 ];
 
-/**
- * @desc 工作期望
- */
-const workInfo: BASE_INFO_FIELDS[] = [
+const workPreferFields: BASE_INFO_FIELDS[] = [
   {
-    key: 'job',
+    key: 'position',
     label: '职位',
-    type: 'input',
+    type: 'longInput',
     require: true,
-    span: 12,
+    span: 24,
   },
   {
     key: 'city',
     label: '城市',
-    type: 'input',
+    type: 'longInput',
     require: true,
-    span: 12,
+    span: 24,
+    remarks: '* 多个地点以 | 分割',
   },
 ];
 
-/**
- * @desc 获奖证书
- */
-const certificateInfo: BASE_INFO_FIELDS[] = [
+const certificateFields: BASE_INFO_FIELDS[] = [
   {
     key: 'certificate',
     label: '证书',
-    type: 'input',
+    type: 'textArea',
     require: true,
-    span: 12,
+    span: 24,
+    remarks: '* 多个证书以 | 分割',
+  },
+];
+
+const evaluationFields: BASE_INFO_FIELDS[] = [
+  {
+    key: 'appraise',
+    label: '评价',
+    type: 'textArea',
+    require: true,
+    span: 24,
+    remarks: '* 可通过 | 分割',
+  },
+];
+
+const skillFields: BASE_INFO_FIELDS[] = [
+  {
+    key: 'skillList',
+    label: '技能清单',
+    type: 'tagsAndTextArea',
+    require: true,
+    span: 24,
+    remarks: '* 多个技能以 | 分割',
+  },
+];
+
+const schoolExperienceFields: BASE_INFO_FIELDS[] = [
+  {
+    key: 'associationActivityList',
+    type: 'multipleList',
+  },
+];
+
+const projectExperienceFields: BASE_INFO_FIELDS[] = [
+  {
+    key: 'projectExperienceList',
+    type: 'multipleList',
+  },
+];
+
+const workExperienceFields: BASE_INFO_FIELDS[] = [
+  {
+    key: 'workExperienceList',
+    type: 'multipleList',
   },
 ];
 
 /**
- * @desc
+ * @description 每个模块对应弹窗中的 表单内容
+ * @personal {personalFields} 个人信息
+ * @contact {contactFields} 联系方式
+ * @education {educationFields} 教育信息
+ * @workPrefer {workPreferFields} 工作期望
+ * @schoolExperience {schoolExperienceFields} 在校经历
+ * @projectExperience {projectExperienceFields} 项目经历
+ * @workExperience {workExperienceFields} 工作经历
+ * @certificate {certificateFields} 获奖证书
+ * @evaluation {evaluationFields} 个人评价
+ * @skill {skillFields} 技能清单
  */
+const moduleHomologousModalFormFields = {
+  personal: personalFields,
+  contact: contactFields,
+  education: educationFields,
+  workPrefer: workPreferFields,
+  schoolExperience: schoolExperienceFields,
+  projectExperience: projectExperienceFields,
+  workExperience: workExperienceFields,
+  certificate: certificateFields,
+  evaluation: evaluationFields,
+  skill: skillFields,
+};
 
-export { baseInfoFields, educationInfo, concatInfoFields, workInfo, certificateInfo };
+const colors = [
+  {
+    // 绿色
+    bg: '#f0f8ec',
+    font: '#78c74f',
+  },
+  {
+    // 灰色
+    bg: '#f4f4f4',
+    font: '#a3a7ab',
+  },
+  {
+    // 橙色
+    bg: '#fdf6ec',
+    font: '#f0c588',
+  },
+  {
+    // 蓝色
+    bg: '#ecf5ff',
+    font: '#67afff',
+  },
+  {
+    // 红色
+    bg: '#fef0ef',
+    font: '#f88c8b',
+  },
+];
+
+/**
+ * @description 技能tag
+ */
+const RecommendSkill: RECOMMEND_SKILL_TYPE[] = [
+  {
+    uid: createUID(),
+    label: 'Vue.js',
+    styles: colors[0],
+  },
+  {
+    uid: createUID(),
+    label: '数据双向绑定原理',
+    styles: colors[2],
+  },
+  {
+    uid: createUID(),
+    label: 'React.js',
+    styles: colors[4],
+  },
+  {
+    uid: createUID(),
+    label: 'VScode',
+    styles: colors[2],
+  },
+  {
+    uid: createUID(),
+    label: 'Angular.js',
+    styles: colors[4],
+  },
+  {
+    uid: createUID(),
+    label: 'Webpack',
+    styles: colors[3],
+  },
+  {
+    uid: createUID(),
+    label: 'React Hooks',
+    styles: colors[2],
+  },
+  {
+    uid: createUID(),
+    label: '开源',
+    styles: colors[0],
+  },
+  {
+    uid: createUID(),
+    label: '了解 MYSQL',
+    styles: colors[4],
+  },
+  {
+    uid: createUID(),
+    label: '微信小程序',
+    styles: colors[0],
+  },
+  {
+    uid: createUID(),
+    label: 'Taro',
+    styles: colors[4],
+  },
+  {
+    uid: createUID(),
+    label: '微信公众号开发',
+    styles: colors[3],
+  },
+  {
+    uid: createUID(),
+    label: 'Babel',
+    styles: colors[1],
+  },
+  {
+    uid: createUID(),
+    label: 'TypeScript',
+    styles: colors[4],
+  },
+  {
+    uid: createUID(),
+    label: 'Electron',
+    styles: colors[2],
+  },
+  {
+    uid: createUID(),
+    label: 'Server',
+    styles: colors[2],
+  },
+  {
+    uid: createUID(),
+    label: 'ESLint',
+    styles: colors[3],
+  },
+  {
+    uid: createUID(),
+    label: '跨域解决',
+    styles: colors[0],
+  },
+  {
+    uid: createUID(),
+    label: '自动化测试',
+    styles: colors[4],
+  },
+  {
+    uid: createUID(),
+    label: 'Linux',
+    styles: colors[2],
+  },
+  {
+    uid: createUID(),
+    label: 'Git',
+    styles: colors[0],
+  },
+  {
+    uid: createUID(),
+    label: '设计模式',
+    styles: colors[1],
+  },
+  {
+    uid: createUID(),
+    label: 'Redis',
+    styles: colors[4],
+  },
+  {
+    uid: createUID(),
+    label: '数据库优化',
+    styles: colors[3],
+  },
+  {
+    uid: createUID(),
+    label: '正则表达式',
+    styles: colors[1],
+  },
+  {
+    uid: createUID(),
+    label: '具备良好的网络基础知识',
+    styles: colors[0],
+  },
+  {
+    uid: createUID(),
+    label: '数据存储',
+    styles: colors[4],
+  },
+  {
+    uid: createUID(),
+    label: 'Echarts',
+    styles: colors[3],
+  },
+];
+
+export { moduleHomologousModalFormFields, RecommendSkill };

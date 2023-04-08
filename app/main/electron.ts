@@ -24,6 +24,13 @@ function createWinow() {
     },
   });
 
+  mainWindow.webContents.on('before-input-event', (event: any, input: any) => {
+    if (input.control && input.key.toLowerCase() === 't') {
+      event.preventDefault();
+      mainWindow.webContents.openDevTools();
+    }
+  });
+
   if (isDev()) {
     mainWindow.loadURL(`http://127.0.0.1:7001`);
   } else {
