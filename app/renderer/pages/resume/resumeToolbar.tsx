@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
-import { RESUME_TOOLBAR_LIST, ICON_LIST, toolbarModuleHomologousModalFormFields } from '@src/common/resumeToolbar';
+import { RESUME_TOOLBAR_LIST, ICON_LIST } from '@src/common/resumeToolbar';
 import { RESUME_TOOLBAR_ITEM, RESUME_TOOLBAR_MAPS, ICON_LIST_TYPE, TOOLBAR_MODULE_TYPE } from '@src/common/type';
 import { MyIcon } from '@src/assest/resume';
 import _ from 'lodash';
@@ -145,11 +145,6 @@ function ResumeToolbar() {
     setState({ open: false });
   };
 
-  /**
-   * @description 弹窗确认，录入信息
-   */
-  const onOkAndEnter = (data: any) => {};
-
   return (
     <div>
       {toolbarList?.map((item) => (
@@ -198,7 +193,6 @@ function ResumeToolbar() {
         <InfoModal
           open={open}
           onCancel={closeInfoModal}
-          onOkAndEnter={onOkAndEnter}
           currentModalItem={currentModalItem as RESUME_TOOLBAR_ITEM}
           fieldsData={fieldsData as BASE_INFO_FIELDS[]}
         />

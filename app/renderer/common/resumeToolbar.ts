@@ -112,20 +112,4 @@ const ICON_LIST: ICON_LIST_TYPE[] = [
   },
 ];
 
-/**
- * @description toolbar每个模块key对应的弹窗内表单内容的key
- */
-const toolbarModuleHomologousModalFormFields = {
-  personal: 'personalFields',
-  contact: 'contactFields',
-  education: 'educationFields',
-  workPrefer: 'workPreferFields',
-  schoolExperience: 'schoolExperienceFields',
-  projectExperience: 'projectExperienceFields',
-  workExperience: 'workExperienceFields',
-  certificate: 'certificateFields',
-  evaluation: 'evaluationFields',
-  skill: 'skillFields',
-};
-
-export { RESUME_TOOLBAR_LIST, ICON_LIST, toolbarModuleHomologousModalFormFields };
+export { RESUME_TOOLBAR_LIST, ICON_LIST };

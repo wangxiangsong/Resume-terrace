@@ -120,18 +120,17 @@ const evaluationFields: BASE_INFO_FIELDS[] = [
     type: 'textArea',
     require: true,
     span: 24,
-    remarks: '* 可通过 | 分割',
   },
 ];
 
 const skillFields: BASE_INFO_FIELDS[] = [
   {
-    key: 'skillList',
+    key: 'skill',
     label: '技能清单',
     type: 'tagsAndTextArea',
     require: true,
     span: 24,
-    remarks: '* 多个技能以 | 分割',
+    remarks: '* 多个技能以 | 分割换行',
   },
 ];
 
@@ -139,6 +138,7 @@ const schoolExperienceFields: BASE_INFO_FIELDS[] = [
   {
     key: 'associationActivityList',
     type: 'multipleList',
+    title: '部门',
   },
 ];
 
@@ -146,6 +146,7 @@ const projectExperienceFields: BASE_INFO_FIELDS[] = [
   {
     key: 'projectExperienceList',
     type: 'multipleList',
+    title: '项目名',
   },
 ];
 
@@ -153,6 +154,7 @@ const workExperienceFields: BASE_INFO_FIELDS[] = [
   {
     key: 'workExperienceList',
     type: 'multipleList',
+    title: '公司',
   },
 ];
 

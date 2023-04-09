@@ -1,13 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import HomeReducer from './module/home';
 import ResumeReducer from './module/resume';
-import TempleteReducer from './module/templete';
 
 const store = configureStore({
   reducer: {
     home: HomeReducer,
     resume: ResumeReducer,
-    templete: TempleteReducer,
   },
 });
 

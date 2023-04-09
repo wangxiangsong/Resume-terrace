@@ -8,6 +8,7 @@ interface BASE_INFO_FIELDS {
   require?: boolean;
   span?: number;
   remarks?: string;
+  title?: string;
 }
 
 /**

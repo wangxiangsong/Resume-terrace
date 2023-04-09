@@ -1,8 +1,7 @@
-import { BASE_INFO_LIST_TYPE } from './type';
 /**
  * @description 基本信息列表
  */
-const BASE_INFO_LIST: BASE_INFO_LIST_TYPE[] = [
+const BASE_INFO_LIST = [
   {
     key: 'username',
     title: '姓名',

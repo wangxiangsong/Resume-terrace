@@ -1,19 +1,20 @@
-import { Modal, DatePicker, Input, Form, Col, Row, Button } from 'antd';
-import React, { FC, useState } from 'react';
+import { Modal, DatePicker, Input, Form, Col, Row, Button, message } from 'antd';
+import React, { FC, useLayoutEffect, useState } from 'react';
 import { BASE_INFO_FIELDS, RECOMMEND_SKILL_TYPE } from './common/type';
 import _ from 'lodash';
 import moment from 'moment';
-import { useDispatch } from 'react-redux';
-import { DispatchType } from '@src/store';
-import { setBaseInfoData } from '@src/store/module/templete';
+import { useDispatch, useSelector } from 'react-redux';
+import { DispatchType, Store } from '@src/store';
+import { entryDataToRedux } from '@src/store/module/resume';
 import { RESUME_TOOLBAR_ITEM } from '@src/common/type';
 import styles from './index.less';
 import { RecommendSkill } from './common/const';
+import { CAREER_TYPE } from '@src/store/type/resume';
+import { MyIcon } from '@src/assest/resume';
 
 interface InfoModalProps {
   open: boolean | undefined;
   onCancel: () => void;
-  onOkAndEnter: (data: any) => void;
   currentModalItem: RESUME_TOOLBAR_ITEM;
   fieldsData: BASE_INFO_FIELDS[];
 }
@@ -21,9 +22,20 @@ interface InfoModalProps {
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 
+const defaultObj = {
+  id: 1,
+  title: '未命名项目',
+  entryTime: moment().format('YYYY/MM/DD HH:mm:ss'),
+  position: '',
+  time: { timeBegin: null, timeEnd: null },
+  content: '',
+};
+
 const InfoModal: FC<InfoModalProps> = (props) => {
   const dispatch = useDispatch<DispatchType>();
-  const { open, onCancel, onOkAndEnter, currentModalItem, fieldsData } = props;
+  const { open, onCancel, currentModalItem, fieldsData } = props;
+
+  const resumeStoreData = useSelector((state: Store) => state.resume[currentModalItem.key]);
 
   // 正常信息录入表单
   const [form] = Form.useForm();
@@ -33,31 +45,94 @@ const InfoModal: FC<InfoModalProps> = (props) => {
   const [multipleForm] = Form.useForm();
 
   // 左侧列表
-  const [leftList, setLeftList] = useState([
-    { title: '上海瞎说大学网络中心', entryTime: '2021/04/08 12:32:22', active: true },
-    { title: '北京瞎说大学网络中心', entryTime: '2021/04/07 12:32:23' },
-  ]);
-
+  const [leftList, setLeftList] = useState<CAREER_TYPE[]>([]);
   // 当前左侧对应的 表单数据
-  const [currentActData, setCurrentActData] = useState({
-    title: '上海瞎说大学网络中心',
-    entryTime: '2021/04/08 12:32:22',
-    corporation: '上海瞎说大学网络中心',
-    position: '前端工程师',
-    time: [moment(), moment()],
-    content:
-      '担任TickNet工作室前端工程师,与湖南瞎说大学网络中心合作,围绕微信企业号开发或主导多个应用｜任职期间基于微信企业号开发校内闲余市场,采用Vue.js主导开发,并与湖南xxx科技有限公司合作,主导开发该公司官网及后台管理',
-  });
+  const [currentActData, setCurrentActData] = useState<CAREER_TYPE>();
+  // 是否可编辑
+  const [isEdit, setIsEdit] = useState(false);
 
+  useLayoutEffect(() => {
+    if (isMultipleList()) {
+      let leftRes: CAREER_TYPE[] = [];
+      if ((resumeStoreData as CAREER_TYPE[]).length) {
+        leftRes = resumeStoreData as CAREER_TYPE[];
+      } else {
+        leftRes = [defaultObj];
+        setIsEdit(true);
+      }
+      setCurrentActData(leftRes[0]);
+      setLeftList(leftRes);
+    }
+  }, [currentModalItem.key]);
+
+  /**
+   * 数据同步到 redux
+   */
+  const stateToRedux = (data: any) => {
+    dispatch(entryDataToRedux({ type: currentModalItem.key, data }));
+  };
+
+  /**
+   * 基本数据格式化处理
+   */
+  const baseDataFormat = (data: any) => {
+    let res = _.cloneDeep(data);
+    const rangeDate = ['schoolYear'];
+    const cutApart = ['city', 'certificate', 'skillList'];
+
+    for (const key of rangeDate) {
+      if (res[key]?.length) {
+        let obj: any = {};
+        obj[`${key}Begin`] = moment(res[key][0]).format('YYYY-MM-DD');
+        obj[`${key}End`] = moment(res[key][1]).format('YYYY-MM-DD');
+        res = _.set(res, key, obj);
+      }
+    }
+
+    for (const key of cutApart) {
+      if (res[key]) {
+        res[`${key}List`] = res[key].split('|');
+      }
+    }
+
+    return res;
+  };
+
+  /**
+   * 多条数据格式化处理
+   */
+  const multipleFormat = (data: any) => {
+    let res = _.cloneDeep(data);
+    const date = ['time'];
+    for (const key of date) {
+      if (res[key]?.length) {
+        let obj: any = {};
+        obj[`${key}Begin`] = moment(res[key][0]).format('YYYY-MM-DD');
+        obj[`${key}End`] = moment(res[key][1]).format('YYYY-MM-DD');
+        res = _.set(res, key, obj);
+      }
+    }
+
+    return res;
+  };
+
+  /**
+   * 基础数据保存
+   */
   const onOk = () => {
-    validateFields().then((values) => {
-      const begin = moment(values.session[0]).format('YYYYMMDD');
-      const end = moment(values.session[1]).format('YYYYMMDD');
-      _.set(values, 'sessionBegin', begin);
-      _.set(values, 'sessionEnd', end);
-      _.set(values, 'session', `${begin}-${end}`);
-      dispatch(setBaseInfoData(values));
-    });
+    validateFields()
+      .then((values) => {
+        let res: any;
+        if (isMultipleList()) {
+          res = [];
+        } else {
+          res = baseDataFormat(values);
+        }
+        stateToRedux(res);
+      })
+      .finally(() => {
+        onCancel();
+      });
   };
 
   /**
@@ -165,31 +240,48 @@ const InfoModal: FC<InfoModalProps> = (props) => {
    * @description 多条数据录入
    * @returns dom
    */
-  const getMultipleListDom = () => {
+  const getMultipleListDom = (list: BASE_INFO_FIELDS[]) => {
     return (
       <div className={`flex p-16px rounded-8px min-h-500px ${styles.multipList_box}`}>
         <div className="flex flex-col justify-between w-[26%] border-r border-[#e5e5e5]">
           <div className="flex flex-col">
-            {leftList.map((item) => (
+            {leftList?.map((item) => (
               <div
-                className={`border-b border-[#e5e5e5] p-5px pl-16px relative ${
-                  item.active ? styles.left_item_active : ''
+                className={`border-b border-[#e5e5e5] p-5px pl-16px relative flex justify-between ${
+                  item?.id === currentActData?.id ? styles.left_item_active : ''
                 }`}
+                key={item.id}
+                onClick={() => leftSubClick(item)}
               >
-                <div className="text-[#404040]">{item.title}</div>
-                <div className="text-[#a3a3a3]">{item.entryTime}</div>
+                <div>
+                  <div className="text-[#404040]">{item.title}</div>
+                  <div className="text-[#a3a3a3]">{item.entryTime}</div>
+                </div>
+                <div>
+                  <MyIcon type="icon-resume-shanchu" onClick={(e) => deleteMultiple(e, item)} />
+                </div>
               </div>
             ))}
           </div>
           <div className="mx-auto">
-            <Button type="default">添加条目</Button>
+            <Button type="default" onClick={addMultipleList}>
+              添加条目
+            </Button>
           </div>
         </div>
         <div className="flex-1">
           <div className="flex justify-between items-center p-16px border-b border-[#e5e5e5]">
-            <div className="text-16px">{currentActData.title}</div>
+            <div className="text-16px">{currentActData?.title}</div>
             <div>
-              <Button type="default">编辑</Button>
+              {isEdit ? (
+                <Button type="primary" onClick={multipleSave}>
+                  保存
+                </Button>
+              ) : (
+                <Button type="default" onClick={multipleEdit}>
+                  编辑
+                </Button>
+              )}
             </div>
           </div>
           <div className="mt-32px">
@@ -197,13 +289,13 @@ const InfoModal: FC<InfoModalProps> = (props) => {
               <Row>
                 <Col span={24}>
                   <Form.Item
-                    label="公司"
-                    name="corporation"
-                    rules={[{ required: true, message: '请输入公司' }]}
+                    label={list[0]?.title}
+                    name="title"
+                    rules={[{ required: true, message: `请输入${list[0]?.title}` }]}
                     labelCol={{ span: 3 }}
                     wrapperCol={{ span: 19 }}
                   >
-                    <Input placeholder="请输入公司" allowClear />
+                    <Input placeholder={`请输入${list[0]?.title}`} allowClear disabled={!isEdit} />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
@@ -214,7 +306,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
                     labelCol={{ span: 3 }}
                     wrapperCol={{ span: 19 }}
                   >
-                    <Input placeholder="请输入职位" allowClear />
+                    <Input placeholder="请输入职位" allowClear disabled={!isEdit} />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
@@ -225,7 +317,7 @@ const InfoModal: FC<InfoModalProps> = (props) => {
                     labelCol={{ span: 3 }}
                     wrapperCol={{ span: 19 }}
                   >
-                    <RangePicker style={{ width: '100%' }} allowClear />
+                    <RangePicker style={{ width: '100%' }} allowClear disabled={!isEdit} />
                   </Form.Item>
                 </Col>
                 <Col span={24}>
@@ -236,7 +328,13 @@ const InfoModal: FC<InfoModalProps> = (props) => {
                     labelCol={{ span: 3 }}
                     wrapperCol={{ span: 19 }}
                   >
-                    <TextArea allowClear autoSize={{ maxRows: 6, minRows: 6 }} maxLength={1000} showCount />
+                    <TextArea
+                      allowClear
+                      autoSize={{ maxRows: 6, minRows: 6 }}
+                      maxLength={1000}
+                      showCount
+                      disabled={!isEdit}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
@@ -245,6 +343,112 @@ const InfoModal: FC<InfoModalProps> = (props) => {
         </div>
       </div>
     );
+  };
+
+  /**
+   * 多条数据弹窗保存
+   */
+  const multipleSave = () => {
+    multipleForm.validateFields().then((values) => {
+      const res = multipleFormat(values);
+      const newCurrentData = { ...res, id: currentActData?.id, entryTime: moment().format('YYYY/MM/DD HH:mm:ss') };
+      const currentLeft = leftList.filter((item) => item.id !== currentActData?.id);
+      setIsEdit(false);
+      setCurrentActData(newCurrentData);
+      setLeftList([...currentLeft, newCurrentData]);
+      stateToRedux([...currentLeft, newCurrentData]);
+    });
+  };
+
+  /**
+   * 多条数据编辑
+   */
+  const multipleEdit = () => {
+    setIsEdit(true);
+  };
+
+  /**
+   * 添加条目
+   */
+  const addMultipleList = () => {
+    const newObj = { ...defaultObj, id: leftList.length + 1, entryTime: moment().format('YYYY/MM/DD HH:mm:ss') };
+    judgeIsEdit(newObj, true, newObj);
+  };
+
+  /**
+   * 点击左侧条目
+   */
+  const leftSubClick = (item: CAREER_TYPE) => {
+    if (item.id !== currentActData?.id) {
+      judgeIsEdit(item, false);
+    }
+  };
+
+  /**
+   * 判断当前条目是否 在可编辑状态下
+   */
+  const judgeIsEdit = (item: CAREER_TYPE, flag: boolean, newObj?: CAREER_TYPE) => {
+    if (isEdit) {
+      Modal.confirm({
+        width: '500px',
+        content: '当前数据未保存,切换条目会导致数据丢失,确认要切换嘛?',
+        centered: true,
+        onOk: () => {
+          if (newObj) {
+            setCurrentActData(newObj);
+            multipleForm.setFieldsValue({});
+          } else {
+            setCurrentActData(item);
+            multipleForm.setFieldsValue({
+              ...item,
+              time: item.time.timeBegin ? [moment(item.time.timeBegin), moment(item.time.timeEnd)] : [],
+            });
+          }
+          setIsEdit(flag);
+        },
+        afterClose: () => {
+          if (newObj) {
+            setLeftList((state) => [...state, newObj]);
+            stateToRedux([...leftList, newObj]);
+          }
+        },
+      });
+    } else {
+      if (newObj) {
+        setCurrentActData(newObj);
+        multipleForm.setFieldsValue({});
+        setLeftList((state) => [...state, newObj]);
+        stateToRedux([...leftList, newObj]);
+      } else {
+        setCurrentActData(item);
+        multipleForm.setFieldsValue({
+          ...item,
+          time: item.time.timeBegin ? [moment(item.time.timeBegin), moment(item.time.timeEnd)] : [],
+        });
+      }
+      setIsEdit(flag);
+    }
+  };
+
+  /**
+   * 删除条目
+   */
+  const deleteMultiple = (e: any, item: CAREER_TYPE) => {
+    if (leftList.length === 1) {
+      message.info({ content: '请添加更多数据再进行删除哦！' });
+    } else {
+      e.stopPropagation();
+      const newLeftData = leftList.filter((d) => d.id !== item.id);
+      Modal.confirm({
+        content: '确认删除嘛？',
+        centered: true,
+        onOk: () => {
+          setLeftList(newLeftData);
+          stateToRedux(newLeftData);
+          setCurrentActData(newLeftData[0]);
+        },
+      });
+    }
   };
 
   return (
@@ -258,11 +462,18 @@ const InfoModal: FC<InfoModalProps> = (props) => {
       centered
       getContainer={() => document.body}
       width={900}
+      footer={
+        !isMultipleList() ? (
+          <Button type="primary" onClick={onOk}>
+            保存
+          </Button>
+        ) : null
+      }
     >
       {isMultipleList() ? (
-        getMultipleListDom()
+        getMultipleListDom(fieldsData)
       ) : (
-        <Form form={form} labelCol={{ span: 6 }}>
+        <Form form={form} labelCol={{ span: 6 }} initialValues={resumeStoreData}>
           <Row>{getFieldsDom(fieldsData)}</Row>
         </Form>
       )}
